@@ -16,7 +16,10 @@ where
     }
 }
 
-pub fn insertion_sort(arr: &mut [i32]) {
+pub fn insertion_sort<T>(arr: &mut [T])
+where
+    T: Ord,
+{
     for i in 1..arr.len() {
         for j in 0..i {
             if arr[i - j - 1] < arr[i - j] {
@@ -25,6 +28,27 @@ pub fn insertion_sort(arr: &mut [i32]) {
 
             arr.swap(i - j - 1, i - j);
         }
+    }
+}
+
+pub fn shell_sort<T>(arr: &mut [T])
+where
+    T: Ord,
+{
+    let mut gap = arr.len() / 2;
+    while gap > 0 {
+        for block_index in 0..gap {
+            for i in 1..arr.len() / gap {
+                for j in 0..i {
+                    if arr[(i - j - 1) * gap + block_index] < arr[(i - j) * gap + block_index] {
+                        break;
+                    }
+
+                    arr.swap((i - j - 1) * gap, (i - j) * gap);
+                }
+            }
+        }
+        gap /= 2;
     }
 }
 
@@ -47,7 +71,7 @@ mod tests {
     #[case(&[0, 1, 0], &[0, 0, 1])]
     #[case(&[0, 10, 5, 2, 3, 9], &[0, 2, 3, 5, 9, 10])]
     fn test(#[case] arr: &[i32], #[case] expected: &[i32]) {
-        let functions = &[f!(selection_sort), f!(insertion_sort)];
+        let functions = &[f!(selection_sort), f!(insertion_sort), f!(shell_sort)];
 
         for (sort_function, name) in functions {
             let mut arr_clone = arr.to_vec();
