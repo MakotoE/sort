@@ -1,0 +1,11 @@
+[package]
+name = "sort"
+version = "0.1.0"
+authors = ["Makoto <makoto@emurasoft.com>"]
+edition = "2018"
+
+[lib]
+name = "sort"
+
+[dependencies]
+rstest = "0.8"
