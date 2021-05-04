@@ -1,17 +1,14 @@
-#![feature(option_result_unwrap_unchecked)]
-
 pub fn selection_sort<T>(arr: &mut [T])
 where
     T: Ord,
 {
     for i in 0..arr.len() {
-        let min = arr
-            .iter()
-            .enumerate()
-            .skip(i)
-            .min_by(|(_, a), (_, b)| a.cmp(b));
-        // SAFETY: arr contains at least 1 element in this for loop so min is never None
-        let (min_index, _) = unsafe { min.unwrap_unchecked() };
+        let mut min_index = i;
+        for (index, item) in arr.iter().enumerate().skip(i) {
+            if item < &arr[min_index] {
+                min_index = index;
+            }
+        }
         arr.swap(i, min_index);
     }
 }
