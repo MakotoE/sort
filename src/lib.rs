@@ -49,10 +49,13 @@ where
     }
 }
 
-pub fn merge_sort(arr: &mut [i32]) {
+pub fn merge_sort<T>(arr: &mut [T])
+where
+    T: Ord + Clone + Default,
+{
     // Copied from https://chercher.tech/rust/merge-sort-rust
 
-    let mut temp = vec![0; arr.len()];
+    let mut temp = vec![T::default(); arr.len()];
     let mut half_length = 1;
     while half_length < arr.len() {
         for i in 0..=arr.len() / (half_length * 2) {
@@ -60,24 +63,27 @@ pub fn merge_sort(arr: &mut [i32]) {
             let mid = usize::min(from + half_length, arr.len());
             let upper = usize::min(from + 2 * half_length, arr.len());
             merge(&arr[from..mid], &arr[mid..upper], &mut temp[from..upper]);
-            arr[from..upper].copy_from_slice(&temp[from..upper]);
+            arr[from..upper].swap_with_slice(&mut temp[from..upper]);
         }
 
         half_length *= 2;
     }
 }
 
-fn merge(left: &[i32], right: &[i32], result: &mut [i32]) {
+fn merge<T>(left: &[T], right: &[T], result: &mut [T])
+where
+    T: Ord + Clone,
+{
     let mut left_index = 0;
     let mut right_index = 0;
     let mut result_index = 0;
 
     while left_index < left.len() && right_index < right.len() {
         if left[left_index] < right[right_index] {
-            result[result_index] = left[left_index];
+            result[result_index] = left[left_index].clone();
             left_index += 1;
         } else {
-            result[result_index] = right[right_index];
+            result[result_index] = right[right_index].clone();
             right_index += 1;
         }
 
@@ -85,13 +91,16 @@ fn merge(left: &[i32], right: &[i32], result: &mut [i32]) {
     }
 
     if left_index < left.len() {
-        result[result_index..].copy_from_slice(&left[left_index..]);
+        result[result_index..].clone_from_slice(&left[left_index..]);
     } else if right_index < right.len() {
-        result[result_index..].copy_from_slice(&right[right_index..]);
+        result[result_index..].clone_from_slice(&right[right_index..]);
     }
 }
 
-pub fn quick_sort(arr: &mut [i32]) {
+pub fn quick_sort<T>(arr: &mut [T])
+where
+    T: Ord,
+{
     if arr.len() <= 1 {
         return;
     }
@@ -101,20 +110,22 @@ pub fn quick_sort(arr: &mut [i32]) {
     quick_sort(&mut arr[partition_index + 1..]);
 }
 
-fn partition(arr: &mut [i32]) -> usize {
+fn partition<T>(arr: &mut [T]) -> usize
+where
+    T: Ord,
+{
     let mut left = 0;
     let mut right = arr.len();
-    let partition_value = arr[0];
     loop {
         left += 1;
         right -= 1;
-        while arr[left] < partition_value {
+        while arr[left] < arr[0] {
             if left == arr.len() - 1 {
                 break;
             }
             left += 1;
         }
-        while arr[right] > partition_value {
+        while arr[right] > arr[0] {
             if right == 0 {
                 break;
             }
