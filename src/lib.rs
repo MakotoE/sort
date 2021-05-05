@@ -1,4 +1,8 @@
 #![feature(is_sorted)]
+#![feature(test)]
+
+mod benchmark;
+
 #[cfg(test)]
 extern crate quickcheck;
 #[cfg(test)]
