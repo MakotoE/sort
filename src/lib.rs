@@ -1,3 +1,10 @@
+#![feature(is_sorted)]
+#[cfg(test)]
+extern crate quickcheck;
+#[cfg(test)]
+#[macro_use(quickcheck)]
+extern crate quickcheck_macros;
+
 pub fn selection_sort<T>(arr: &mut [T])
 where
     T: Ord,
@@ -147,30 +154,42 @@ mod tests {
 
     macro_rules! f {
         ( $function:expr ) => {
-            ($function as fn(&mut [i32]), stringify!($function))
+            ($function, stringify!($function))
         };
     }
 
-    #[rstest]
-    #[case(&[], &[])]
-    #[case(&[0], &[0])]
-    #[case(&[0, 1], &[0, 1])]
-    #[case(&[1, 0], &[0, 1])]
-    #[case(&[0, 1, 0], &[0, 0, 1])]
-    #[case(&[0, 10, 5, 2, 3, 9], &[0, 2, 3, 5, 9, 10])]
-    fn test(#[case] arr: &[i32], #[case] expected: &[i32]) {
-        let functions = &[
-            f!(selection_sort),
-            f!(insertion_sort),
-            f!(shell_sort),
-            f!(merge_sort),
-            f!(quick_sort),
-        ];
+    const FUNCTIONS: [(fn(&mut [i32]), &str); 5] = [
+        f!(selection_sort),
+        f!(insertion_sort),
+        f!(shell_sort),
+        f!(merge_sort),
+        f!(quick_sort),
+    ];
 
-        for (sort_function, name) in functions {
+    #[rstest]
+    #[case(& [], & [])]
+    #[case(& [0], & [0])]
+    #[case(& [0, 1], & [0, 1])]
+    #[case(& [1, 0], & [0, 1])]
+    #[case(& [0, 1, 0], & [0, 0, 1])]
+    #[case(& [0, 10, 5, 2, 3, 9], & [0, 2, 3, 5, 9, 10])]
+    fn test(#[case] arr: &[i32], #[case] expected: &[i32]) {
+        for (sort_function, name) in FUNCTIONS.iter() {
             let mut arr_clone = arr.to_vec();
             sort_function(&mut arr_clone);
             assert_eq!(arr_clone, expected, "function: {}()", name);
         }
+    }
+
+    #[quickcheck]
+    fn sorted(mut input: Vec<i32>) -> bool {
+        FUNCTIONS.iter().all(|(sort_function, name)| {
+            sort_function(&mut input);
+            let result = input.is_sorted();
+            if !result {
+                eprintln!("{}()", name);
+            }
+            result
+        })
     }
 }
