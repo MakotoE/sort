@@ -91,6 +91,44 @@ fn merge(left: &[i32], right: &[i32], result: &mut [i32]) {
     }
 }
 
+pub fn quick_sort(arr: &mut [i32]) {
+    if arr.len() <= 1 {
+        return;
+    }
+
+    let partition_index = partition(arr);
+    quick_sort(&mut arr[..partition_index]);
+    quick_sort(&mut arr[partition_index + 1..]);
+}
+
+fn partition(arr: &mut [i32]) -> usize {
+    let mut left = 0;
+    let mut right = arr.len();
+    let partition_value = arr[0];
+    loop {
+        left += 1;
+        right -= 1;
+        while arr[left] < partition_value {
+            if left == arr.len() - 1 {
+                break;
+            }
+            left += 1;
+        }
+        while arr[right] > partition_value {
+            if right == 0 {
+                break;
+            }
+            right -= 1;
+        }
+        if left >= right {
+            break;
+        }
+        arr.swap(left, right);
+    }
+    arr.swap(0, right);
+    right
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -115,6 +153,7 @@ mod tests {
             f!(insertion_sort),
             f!(shell_sort),
             f!(merge_sort),
+            f!(quick_sort),
         ];
 
         for (sort_function, name) in functions {
