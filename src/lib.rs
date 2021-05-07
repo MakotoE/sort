@@ -181,13 +181,13 @@ pub fn heap_sort(arr: &mut [i32]) {
         return;
     }
 
-    for i in 0..=arr.len().saturating_sub(2) / 2 {
-        sink(arr, arr.len().saturating_sub(2) / 2 - i);
+    for i in (0..=arr.len() - 2 / 2).rev() {
+        sink(arr, i);
     }
 
-    for n in (1..arr.len()).rev() {
-        arr.swap(0, n);
-        sink(&mut arr[..n], 0);
+    for i in (1..arr.len()).rev() {
+        arr.swap(0, i);
+        sink(&mut arr[..i], 0);
     }
 }
 

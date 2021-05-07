@@ -1,6 +1,6 @@
 extern crate test;
 
-use crate::{insertion_sort, merge_sort, quick_sort, selection_sort, shell_sort};
+use crate::{heap_sort, insertion_sort, merge_sort, quick_sort, selection_sort, shell_sort};
 use rand::distributions::Standard;
 use rand::rngs::SmallRng;
 use rand::{Rng, SeedableRng};
@@ -160,6 +160,33 @@ fn quick_sort_1024(b: &mut Bencher) {
     b.iter(|| {
         let mut arr = array;
         quick_sort(&mut arr);
+    });
+}
+
+#[bench]
+fn heap_sort_16_shuffled(b: &mut Bencher) {
+    let array = shuffled_16();
+    b.iter(|| {
+        let mut arr = array;
+        heap_sort(&mut arr);
+    });
+}
+
+#[bench]
+fn heap_sort_16_sorted(b: &mut Bencher) {
+    let array = sorted_16();
+    b.iter(|| {
+        let mut arr = array;
+        heap_sort(&mut arr);
+    });
+}
+
+#[bench]
+fn heap_sort_1024(b: &mut Bencher) {
+    let array = thousand();
+    b.iter(|| {
+        let mut arr = array;
+        heap_sort(&mut arr);
     });
 }
 
