@@ -151,6 +151,46 @@ where
     right
 }
 
+fn sink(arr: &mut [i32], mut root: usize) {
+    while 2 * root + 1 <= arr.len() {
+        let left = 2 * root + 1;
+        let mut swap = root;
+
+        if left >= arr.len() {
+            return;
+        }
+
+        if arr[swap] < arr[left] {
+            swap = left;
+        }
+
+        if left + 1 < arr.len() && arr[swap] < arr[left + 1] {
+            swap = left + 1;
+        }
+        if swap == root {
+            return;
+        }
+
+        arr.swap(root, swap);
+        root = swap;
+    }
+}
+
+pub fn heap_sort(arr: &mut [i32]) {
+    if arr.len() <= 1 {
+        return;
+    }
+
+    for i in 0..=arr.len().saturating_sub(2) / 2 {
+        sink(arr, arr.len().saturating_sub(2) / 2 - i);
+    }
+
+    for n in (1..arr.len()).rev() {
+        arr.swap(0, n);
+        sink(&mut arr[..n], 0);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -162,12 +202,13 @@ mod tests {
         };
     }
 
-    const FUNCTIONS: [(fn(&mut [i32]), &str); 5] = [
+    const FUNCTIONS: [(fn(&mut [i32]), &str); 6] = [
         f!(selection_sort),
         f!(insertion_sort),
         f!(shell_sort),
         f!(merge_sort),
         f!(quick_sort),
+        f!(heap_sort),
     ];
 
     #[rstest]
